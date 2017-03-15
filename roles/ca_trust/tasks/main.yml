@@ -1,0 +1,16 @@
+---
+- name: check vars
+  assert:
+    that:
+      - certs_ca != ""
+
+- name: template ca cert to anchors
+  template:
+    src: "etc/pki/ca-trust/source/anchors/custom-ca.crt.j2"
+    dest: "/etc/pki/ca-trust/source/anchors/custom-ca.crt"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: update-ca-trust
+  command: /usr/bin/update-ca-trust

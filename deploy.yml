@@ -1,0 +1,3 @@
+---
+- include: "ca_trust.yml"
+- include: "etcd_new_cluster.yml"
