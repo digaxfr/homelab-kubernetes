@@ -1,0 +1,4 @@
+---
+etcd_ca: "{{ certs_ca }}"
+etcd_cert: "{{ certs_wildcard_cert }}"
+etcd_key: "{{ certs_wildcard_key }}"

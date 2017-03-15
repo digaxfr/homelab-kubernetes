@@ -1,0 +1,63 @@
+---
+- name: check vars
+  assert:
+    that:
+      - etcd_ca != ""
+      - etcd_cert != ""
+      - etcd_key != ""
+
+- name: install etcd
+  yum:
+    name: "etcd"
+    state: "present"
+  register: "_etcd_installed"
+
+- name: template ca.crt
+  template:
+    src: "etc/etcd/ca.crt.j2"
+    dest: "/etc/etcd/ca.crt"
+    owner: "root"
+    group: "etcd"
+    mode: 0640
+  when: "{{ _etcd_installed | changed }}"
+
+- name: template server.crt
+  template:
+    src: "etc/etcd/server.crt.j2"
+    dest: "/etc/etcd/server.crt"
+    owner: "root"
+    group: "etcd"
+    mode: 0640
+  when: "{{ _etcd_installed | changed }}"
+
+- name: template server.key
+  template:
+    src: "etc/etcd/server.key.j2"
+    dest: "/etc/etcd/server.key"
+    owner: "root"
+    group: "etcd"
+    mode: 0640
+  when: "{{ _etcd_installed | changed }}"
+
+# We only want to template a new configuration on new installs because of the
+# --initial-cluster-state flag
+- name: template etcd.conf
+  template:
+    src: "etc/etcd/etcd.conf.j2"
+    dest: "/etc/etcd/etcd.conf"
+    owner: root
+    group: root
+    mode: 0640
+  when: "{{ _etcd_installed | changed }}"
+
+- name: enable on boot
+  service:
+    name: "etcd"
+    enabled: True
+  when: "{{ _etcd_installed | changed }}"
+
+- name: start etcd
+  service:
+    name: "etcd"
+    state: "started"
+  when: "{{ _etcd_installed | changed }}"

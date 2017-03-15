@@ -1,0 +1,6 @@
+---
+- hosts: etcd_cluster
+  become: True
+  gather_facts: True
+  roles:
+    - "etcd/new_cluster"

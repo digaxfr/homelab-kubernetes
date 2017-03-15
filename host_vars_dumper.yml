@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: True
+  gather_facts: True
+  tasks:
+    - name: debug
+      debug:
+        msg: "{{ hostvars[inventory_hostname] }}"

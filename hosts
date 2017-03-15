@@ -1,0 +1,11 @@
+# homelab-kubernetes
+
+#[masters]
+#kubester-01 ansible_host=2600:1f16:480:e800:e5e7:5922:960:93e5
+
+#[nodes]
+
+[etcd_cluster]
+ip-10-0-100-41.us-east-2.compute.internal
+ip-10-0-100-39.us-east-2.compute.internal
+ip-10-0-100-56.us-east-2.compute.internal
