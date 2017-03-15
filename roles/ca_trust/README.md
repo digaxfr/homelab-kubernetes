@@ -7,8 +7,8 @@ for RHEL/CentOS/Fedora based distributions.
 
 The following variables need to be defined:
 
-| Variable | Content |
-|--------------------|
+| Variable | Description |
+|----------|-------------|
 | certs_ca | The CA certificate file |
 
 # Usage
