@@ -1,0 +1,10 @@
+---
+- name: check if fs exists
+  command: /sbin/wipefs -p {{ item.disk }}
+  with_items: "{{ lvm_fs }}"
+  register: "_wipefs"
+
+- name: mkfs
+  command: /sbin/mkfs -t {{ item.item.fstype }} {{ item.item.extras | default('') }} {{ item.item.disk }}
+  with_items: "{{ _wipefs.results }}"
+  when: "{{ item.stdout == '' }}"

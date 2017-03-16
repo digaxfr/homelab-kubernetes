@@ -1,0 +1,40 @@
+---
+# At the time of this writing, the LVM modules are labeled "preview"
+# So here we are, brute forcing it with LVM commands and return codes
+- name: install lvm2
+  yum:
+    name: "lvm2"
+    state: "installed"
+
+- name: pvcreate -- test
+  command: /sbin/pvcreate -t {{ item }}
+  with_items: "{{ lvm_pgs }}"
+  ignore_errors: True
+  register: "_pvcreate"
+
+- name: pvcreate
+  command: /sbin/pvcreate {{ item.item }}
+  with_items: "{{ _pvcreate.results }}"
+  when: "{{ item.rc == 0 }}"
+
+- name: vgcreate -- test
+  command: /sbin/vgcreate -t {{ item.key }} {{ item.value.members | join(' ') }}
+  ignore_errors: True
+  with_dict: "{{ lvm_vgs }}"
+  register: "_vgcreate"
+
+- name: vgcreate
+  command: /sbin/vgcreate {{ item.item.key }} {{ item.item.value.members | join(' ') }}
+  with_items: "{{ _vgcreate.results }}"
+  when: "{{ item.rc == 0 }}"
+
+- name: lvcreate -- test
+  command: /sbin/lvcreate -t -n {{ item.key }} -l {{ item.value.size }} {{ item.value.vg }}
+  ignore_errors: True
+  with_dict: "{{ lvm_lvs }}"
+  register: "_lvcreate"
+
+- name: lvcreate
+  command: /sbin/lvcreate -n {{ item.item.key }} -l {{ item.item.value.size }} {{ item.item.value.vg }}
+  with_items: "{{ _lvcreate.results }}"
+  when: "{{ item.rc == 0 }}"

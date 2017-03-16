@@ -1,0 +1,9 @@
+---
+- name: set mounts
+  mount:
+    name: "{{ item.path }}"
+    src: "{{ item.disk }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.opts | default('') }}"
+    state: "mounted"
+  with_items: "{{ lvm_mounts }}"

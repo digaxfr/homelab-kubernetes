@@ -1,0 +1,19 @@
+---
+# There is a parted module in Ansible 2.3; but I am on 2.2.1
+- name: check to see if a partition table exists
+  command: /sbin/parted -s -m {{ item }} print
+  with_items: "{{ lvm_pdisks }}"
+  ignore_errors: True
+  register: "_ptable"
+
+- name: create the disk label
+  command: /sbin/parted -s -m {{ item.item }} mklabel gpt
+  with_items: "{{ _ptable.results }}"
+  when: "{{ 'unrecognised disk label' in _ptable.results[0].stderr }}"
+  register: "_new_label"
+
+# Assumption is that the disks will always be one partition
+- name: create partitions
+  command: /sbin/parted -s -a optimal {{ item.item }} mkpart primary 0% 100%
+  with_items: "{{ _ptable.results }}"
+  when: "{{ _new_label | changed }}"

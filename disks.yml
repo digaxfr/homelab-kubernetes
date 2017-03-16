@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: True
+  gather_facts: True
+  roles:
+    - disks/parted
+    - disks/lvm
+    - disks/filesystem
+    - disks/mounts
