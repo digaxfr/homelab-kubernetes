@@ -4,6 +4,9 @@ Ansible project for building out a simple Kubernetes cluster from scratch.
 
 # Usage
 
+Note: The server that is executing the playbooks needs to be within the
+environment. These playbooks are not designed to handle floating IPs.
+
 * Set up your AWS environment (3x masters, 3x nodes)
   * AMI: CentOS 7 - x86-64 with HVM (although any other RHEL/CentOS/Fedora
   based distribution should work)
