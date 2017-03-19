@@ -4,13 +4,16 @@ Ansible project for building out a simple Kubernetes cluster from scratch.
 
 # Progression
 
+Note that these topics are high-level topics. They do not represent the actual
+ansible roles.
+
 | Topic         | Status       |
 |---------------|--------------|
 | aws bootstrap | Not started  |
 | etcd          | Ansible done |
-| flannel       | Manual notes |
+| flannel       | Ansible done |
 | calico        | Not started  |
-| docker        | Manual notes |
+| docker        | Ansible done |
 | kubernetes    | Manual notes |
 
 ## Container Networking
