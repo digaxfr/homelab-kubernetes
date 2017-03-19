@@ -1,3 +1,7 @@
 ---
+- include: "yum_upgrade.yml"
 - include: "ca_trust.yml"
+- include: "disks.yml"
 - include: "etcd_new_cluster.yml"
+- include: "flannel.yml"
+- include: "docker.yml"

@@ -1,0 +1,53 @@
+# Ansible managed
+
+[Unit]
+Description=Docker Application Container Engine
+Documentation=http://docs.docker.com
+After=network.target flannel.service
+Requires=docker-cleanup.timer
+
+[Service]
+Type=notify
+NotifyAccess=all
+EnvironmentFile=/run/flannel/subnet.env
+Environment=GOTRACEBACK=crash
+Environment=DOCKER_HTTP_HOST_COMPAT=1
+Environment=PATH=/usr/libexec/docker:/usr/bin:/usr/sbin
+ExecStartPre=-/usr/sbin/ip link set dev docker0 down
+ExecStartPre=-/usr/sbin/ip link del dev docker0
+ExecStart=/usr/bin/dockerd-current \
+    --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current \
+    --default-runtime=docker-runc \
+    --exec-opt native.cgroupdriver=systemd \
+    --userland-proxy-path=/usr/libexec/docker/docker-proxy-current \
+    --log-driver=journald \
+    --signature-verification=false \
+    --storage-driver=overlay \
+    --bip=${FLANNEL_SUBNET} \
+    --mtu=${FLANNEL_MTU} \
+    --ip-forward \
+    --iptables=false \
+    --ip-masq=false \
+    --cluster-store="etcd://
+{%- for i in groups['etcd_cluster'] %}
+{%- if loop.last %}
+{{ i }}:2379
+{%- else %}
+{{ i }}:2379,
+{%- endif %}
+{%- endfor %}
+" \
+    --cluster-store-opt=kv.cacertfile=/etc/etcd/ca.crt \
+    --cluster-store-opt=kv.certfile=/etc/etcd/etcd_wildcard.crt \
+    --cluster-store-opt=kv.keyfile=/etc/etcd/etcd_wildcard.key
+
+ExecReload=/bin/kill -s HUP $MAINPID
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+TimeoutStartSec=0
+Restart=on-abnormal
+MountFlags=slave
+
+[Install]
+WantedBy=multi-user.target

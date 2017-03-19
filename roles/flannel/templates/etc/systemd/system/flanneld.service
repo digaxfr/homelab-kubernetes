@@ -1,0 +1,24 @@
+# Ansible managed
+
+[Unit]
+Requires=etcd.service
+After=etcd.service
+
+[Service]
+Type=notify
+TimeoutStartSec=15
+ExecStart=/usr/bin/flanneld \
+  -etcd-certfile /etc/flannel/server.crt \
+  -etcd-keyfile /etc/flannel/server.key \
+  -etcd-endpoints "
+{%- for i in groups['etcd_cluster'] %}
+{%- if loop.last %}
+https://{{ i }}:2379
+{%- else %}
+https://{{ i }}:2379,
+{%- endif %}
+{%- endfor %}
+"
+
+[Install]
+WantedBy=multi-user.target

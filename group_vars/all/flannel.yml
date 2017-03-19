@@ -1,0 +1,3 @@
+---
+flannel_cert: "{{ certs_wildcard_cert }}"
+flannel_key: "{{ certs_wildcard_key }}"

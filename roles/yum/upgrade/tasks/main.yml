@@ -1,0 +1,20 @@
+---
+- name: "yum upgrade"
+  command: "/usr/bin/yum -y upgrade"
+
+# https://github.com/ansible/ansible/issues/14413#issuecomment-257887580
+- name: "reboot"
+  shell: "sleep 2 && /sbin/shutdown -r now 'Ansible reboot'"
+  async: 1
+  poll: 0
+  ignore_errors: True
+
+- name: "wait for ssh to return"
+  local_action: "wait_for"
+  args:
+    host: "{{ inventory_hostname }}"
+    port: 22
+    state: "started"
+    delay: 30
+    timeout: 150
+  become: False

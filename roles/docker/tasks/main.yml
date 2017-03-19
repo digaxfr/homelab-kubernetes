@@ -1,0 +1,41 @@
+---
+- name: "install docker"
+  yum:
+    name: "docker"
+    state: "present"
+
+- name: "sysctl for docker"
+  template:
+    src: "etc/sysctl.d/50-docker.conf.j2"
+    dest: "/etc/sysctl.d/50-docker.conf"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  register: "_sysctl"
+
+- name: "reload sysctl values"
+  command: "/sbin/sysctl --system"
+  when: "{{ _sysctl | changed }}"
+
+- name: "template systemd unit"
+  template:
+    src: "etc/systemd/system/docker.service.j2"
+    dest: "/etc/systemd/system/docker.service"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  register: "_systemd"
+
+- name: "systemctl daemon-reload"
+  command: "/usr/bin/systemctl daemon-reload"
+  when: "{{ _systemd | changed }}"
+
+- name: "enable docker"
+  service:
+    name: "docker"
+    enabled: True
+
+- name: "ensure docker is started (running)"
+  service:
+    name: "docker"
+    state: "started"

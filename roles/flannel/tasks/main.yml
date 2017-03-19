@@ -1,0 +1,54 @@
+---
+- name: "install flannel"
+  yum:
+    name: "flannel"
+    state: "present"
+
+- name: "flannel dir"
+  file:
+    path: "/etc/flannel"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: 0640
+
+- name: "template certs"
+  template:
+    src: "etc/flannel/server.{{ item }}.j2"
+    dest: "/etc/flannel/server.{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: 0640
+  with_items:
+    - "crt"
+    - "key"
+
+# uri module does not support TLS cert auth
+- name: "set the initial flannel config"
+  command: |
+    curl https://{{ groups['etcd_cluster'][0] }}:2379/v2/keys/atomic.io/network/config \
+    --key /etc/flannel/server.key \
+    --cert /etc/flannel/server.crt \
+    -d '{{ lookup("template", "etc/flannel/config.j2") }}' \
+    -X PUT
+  run_once: True
+
+- name: "template flannel systemd unit"
+  template:
+    src: "etc/systemd/system/flanneld.service"
+    dest: "/etc/systemd/system/flanneld.service"
+  register: "_systemd"
+
+- name: "systemctl daemon-reload"
+  command: "/usr/bin/systemctl daemon-reload"
+  when: "{{ _systemd | changed }}"
+
+- name: "enable flanneld"
+  service:
+    name: "flanneld"
+    enabled: True
+
+- name: "start flanneld"
+  service:
+    name: "flanneld"
+    state: "started"
