@@ -1,0 +1,27 @@
+---
+lvm_pdisks:
+  - "/dev/xvdb"
+
+lvm_pgs:
+  - "/dev/xvdb1"
+
+lvm_vgs:
+  vg_docker:
+    members:
+      - "/dev/xvdb1"
+
+lvm_lvs:
+  lv_docker:
+    size: "100%FREE"
+    vg: "vg_docker"
+
+lvm_fs:
+  - disk: "/dev/mapper/vg_docker-lv_docker"
+    fstype: "xfs"
+    extras: "-n ftype=1"
+
+lvm_mounts:
+  - disk: "/dev/mapper/vg_docker-lv_docker"
+    path: "/var/lib/docker"
+    fstype: "xfs"
+    opts: "defaults,noatime"

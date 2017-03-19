@@ -1,0 +1,6 @@
+---
+kube_version: "v1.5.4"
+kube_release_package_name: "kubernetes.tar.gz"
+kube_release_package_url: "https://github.com/kubernetes/kubernetes/releases/download/{{ kube_version }}/{{ kube_release_package_name }}"
+kube_server_package_name: "kubernetes-server-linux-amd64.tar.gz"
+kube_strap_dir: "/tmp/kube-strap-{{ kube_version }}"

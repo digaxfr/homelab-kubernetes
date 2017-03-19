@@ -1,0 +1,6 @@
+---
+- hosts: "masters, nodes"
+  gather_facts: True
+  become: True
+  roles:
+    - "kubernetes/bootstrap_files_remote"

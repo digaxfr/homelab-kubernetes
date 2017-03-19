@@ -1,0 +1,8 @@
+---
+- name: "copy kube server tarball to remote servers"
+  copy:
+    src: "{{ kube_strap_dir }}/kubernetes/server/{{ kube_server_package_name }}"
+    dest: "/opt"
+
+- name: "untar that tarball"
+  shell: "cd /opt && tar zxvf {{ kube_server_package_name }}"

@@ -1,12 +1,12 @@
 # Ansible managed
 
 [Unit]
-Requires=etcd.service
-After=etcd.service
+Requires=network.target
+After=network.target
 
 [Service]
 Type=notify
-TimeoutStartSec=15
+TimeoutStartSec=120
 ExecStart=/usr/bin/flanneld \
   -etcd-certfile /etc/flannel/server.crt \
   -etcd-keyfile /etc/flannel/server.key \

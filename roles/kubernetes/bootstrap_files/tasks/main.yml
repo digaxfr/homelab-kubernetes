@@ -1,0 +1,20 @@
+---
+- name: "create /opt/kube-strap"
+  file:
+    path: "{{ kube_strap_dir }}"
+    state: "directory"
+
+- name: "download the tar package"
+  uri:
+    url: "{{ kube_release_package_url }}"
+    follow_redirects: "safe"
+    status_code: 200, 304
+    dest: "{{ kube_strap_dir }}/{{ kube_release_package_name }}"
+
+- name: "unpackage"
+  shell: "cd {{ kube_strap_dir }} && tar -zxvf {{ kube_release_package_name }}"
+
+- name: "download extra binaries"
+  command: "{{ kube_strap_dir }}/kubernetes/cluster/get-kube-binaries.sh"
+  environment:
+    KUBERNETES_SKIP_CONFIRM: True
