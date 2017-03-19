@@ -1,14 +1,14 @@
 # homelab-kubernetes
 
 [masters]
-ip-10-0-100-10.us-east-2.compute.internal
-ip-10-0-100-75.us-east-2.compute.internal
-ip-10-0-100-143.us-east-2.compute.internal
+ip-10-0-100-62.us-east-2.compute.internal
+ip-10-0-100-126.us-east-2.compute.internal
+ip-10-0-100-190.us-east-2.compute.internal
 
 [nodes]
-ip-10-0-100-14.us-east-2.compute.internal
-ip-10-0-100-115.us-east-2.compute.internal
-ip-10-0-100-145.us-east-2.compute.internal
+ip-10-0-100-61.us-east-2.compute.internal
+ip-10-0-100-125.us-east-2.compute.internal
+ip-10-0-100-189.us-east-2.compute.internal
 
 [docker_nodes:children]
 masters
