@@ -7,3 +7,5 @@
 - include: "docker.yml"
 - include: "kubernetes_bootstrap_files.yml"
 - include: "kubernetes_bootstrap_files_remote.yml"
+- include: "kubernetes_masters.yml"
+- include: "kubernetes_nodes.yml"
