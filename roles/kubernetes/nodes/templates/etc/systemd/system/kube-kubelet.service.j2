@@ -1,0 +1,17 @@
+# Ansible managed
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/opt/kubernetes/server/bin/kubelet \
+  --kubeconfig /var/lib/kubelet/kubeconfig \
+  --require-kubeconfig \
+  --tls-private-key-file /opt/kubernetes/server/certs/server.key \
+  --tls-cert-file /opt/kubernetes/server/certs/server.crt
+
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

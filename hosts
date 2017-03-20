@@ -10,7 +10,7 @@ ip-10-0-100-61.us-east-2.compute.internal
 ip-10-0-100-125.us-east-2.compute.internal
 ip-10-0-100-189.us-east-2.compute.internal
 
-[docker_nodes:children]
+[docker:children]
 masters
 nodes
 

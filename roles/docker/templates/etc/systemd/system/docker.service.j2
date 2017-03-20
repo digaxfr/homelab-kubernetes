@@ -3,13 +3,13 @@
 [Unit]
 Description=Docker Application Container Engine
 Documentation=http://docs.docker.com
-After=network.target{{ " flannel.service" if "node" in hostvars[inventory_hostname].group_names else "" }}
+After=network.target{{ " flannel.service" if "nodes" in hostvars[inventory_hostname].group_names else "" }}
 Requires=docker-cleanup.timer
 
 [Service]
 Type=notify
 NotifyAccess=all
-{% if "node" in hostvars[inventory_hostname].group_names %}
+{% if "nodes" in hostvars[inventory_hostname].group_names %}
 EnvironmentFile=/run/flannel/subnet.env
 {% endif %}
 Environment=GOTRACEBACK=crash
@@ -25,8 +25,8 @@ ExecStart=/usr/bin/dockerd-current \
     --log-driver=journald \
     --signature-verification=false \
     --storage-driver=overlay \
-    {{ "--bip=${FLANNEL_SUBNET} \\" if "node" in hostvars[inventory_hostname].group_names else "\\" }}
-    {{ "--mtu=${FLANNEL_MTU} \\" if "node" in hostvars[inventory_hostname].group_names else "\\" }}
+    {{ "--bip=${FLANNEL_SUBNET} \\" if "nodes" in hostvars[inventory_hostname].group_names else "\\" }}
+    {{ "--mtu=${FLANNEL_MTU} \\" if "nodes" in hostvars[inventory_hostname].group_names else "\\" }}
     --ip-forward \
     --iptables=false \
     --ip-masq=false \

@@ -1,0 +1,15 @@
+# Ansible managed
+[Unit]
+Description=Kubernetes kube-proxy
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/opt/kubernetes/server/bin/kube-proxy \
+  --kubeconfig /var/lib/kubelet/kubeconfig \
+  --cluster-cidr {{ flannel_network }}
+
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

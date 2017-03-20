@@ -1,0 +1,17 @@
+# Ansible managed
+[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/kubernetes/kubernetes
+Requires=kube-apiserver.service
+After=kube-apiserver.service
+
+[Service]
+ExecStart=/opt/kubernetes/server/bin/kube-controller-manager \
+  --master=127.0.0.1:8080 \
+  --service-cluster-ip-range={{ kube_service_network }} \
+  --cluster-cidr={{ flannel_network }}
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

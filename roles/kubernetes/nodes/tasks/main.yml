@@ -1,0 +1,77 @@
+---
+- name: "make dirs"
+  file:
+    path: "/var/lib/{{ item }}"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: 0640
+  with_items:
+    - "kubelet"
+    - "kube-proxy"
+
+- name: "init the kubeconfig - set-cluster"
+  command: |
+    /opt/kubernetes/server/bin/kubectl --kubeconfig=/var/lib/kubelet/kubeconfig
+    config set-cluster {{ kube_cluster_name }}
+    --server=https://{{ groups.masters[0] }}:6443
+    --certificate-authority=/opt/kubernetes/server/certs/ca.crt
+    --embed-certs=true
+
+- name: "init the kubeconfig - set-credentials"
+  command: |
+    /opt/kubernetes/server/bin/kubectl --kubeconfig=/var/lib/kubelet/kubeconfig
+    config set-credentials kubelet
+    --client-certificate=/opt/kubernetes/server/certs/server.crt
+    --client-key=/opt/kubernetes/server/certs/server.key
+    --embed-certs=true
+
+- name: "init the kubeconfig - set-context"
+  command: |
+    /opt/kubernetes/server/bin/kubectl --kubeconfig=/var/lib/kubelet/kubeconfig
+    config set-context {{ kube_cluster_name }}
+    --cluster={{ kube_cluster_name }}
+    --user=kubelet
+
+- name: "init the kubeconfig - use-context"
+  command: |
+    /opt/kubernetes/server/bin/kubectl --kubeconfig=/var/lib/kubelet/kubeconfig
+    config use-context {{ kube_cluster_name }}
+
+- name: "symlink kubeconfig, kubelet to kube-proxy"
+  file:
+    path: "/var/lib/kube-proxy/kubeconfig"
+    src: "/var/lib/kubelet/kubeconfig"
+    state: "link"
+
+- name: "template kube systemd units"
+  template:
+    src: "etc/systemd/system/{{ item }}.service.j2"
+    dest: "/etc/systemd/system/{{ item }}.service"
+    owner: "root"
+    group: "root"
+    mode: 0640
+  with_items:
+    - "kube-kubelet"
+    - "kube-proxy"
+  register: "_systemd"
+
+- name: "systemctl daemon-reload"
+  command: "systemctl daemon-reload"
+  when: "_systemd | changed"
+
+- name: "enable services"
+  service:
+    name: "{{ item }}"
+    enabled: True
+  with_items:
+    - "kube-kubelet"
+    - "kube-proxy"
+
+- name: "start services"
+  service:
+    name: "{{ item }}"
+    state: "started"
+  with_items:
+    - "kube-kubelet"
+    - "kube-proxy"

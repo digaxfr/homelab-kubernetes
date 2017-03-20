@@ -6,3 +6,27 @@
 
 - name: "untar that tarball"
   shell: "cd /opt && tar zxvf {{ kube_server_package_name }}"
+
+- name: "create certs directory"
+  file:
+    path: "/opt/kubernetes/server/certs"
+    state: "directory"
+
+- name: "template ca cert over"
+  template:
+    src: "opt/kubernetes/server/certs/ca.crt.j2"
+    dest: "/opt/kubernetes/server/certs/ca.crt"
+    owner: "root"
+    group: "root"
+    mode: 0640
+
+- name: "template host certs over"
+  template:
+    src: "opt/kubernetes/server/certs/server.{{ item }}.j2"
+    dest: "/opt/kubernetes/server/certs/server.{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: 0640
+  with_items:
+    - "crt"
+    - "key"

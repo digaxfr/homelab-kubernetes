@@ -1,0 +1,33 @@
+# Ansible managed
+[Unit]
+Description=Kubernetes API server
+Documentation=https://github.com/kubernetes/kubernetes
+After=etcd.service
+Requires=etcd.service
+
+[Service]
+Type=notify
+ExecStart=/opt/kubernetes/server/bin/kube-apiserver \
+    --etcd-cafile /opt/kubernetes/server/certs/ca.crt \
+    --etcd-certfile /opt/kubernetes/server/certs/server.crt \
+    --etcd-keyfile /opt/kubernetes/server/certs/server.key \
+    --etcd-servers "
+{%- for i in groups['etcd_cluster'] %}
+{%- if loop.last %}
+https://{{ i }}:2379
+{%- else %}
+https://{{ i }}:2379,
+{%- endif %}
+{%- endfor %}
+" \
+    --service-cluster-ip-range {{ kube_service_network }} \
+    --tls-ca-file /opt/kubernetes/server/certs/ca.crt \
+    --tls-cert-file /opt/kubernetes/server/certs/server.crt \
+    --tls-private-key-file /opt/kubernetes/server/certs/server.key \
+    --client-ca-file /opt/kubernetes/server/certs/ca.crt \
+    --bind-address {{ ansible_default_ipv4.address }}
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

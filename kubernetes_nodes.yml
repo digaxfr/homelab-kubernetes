@@ -1,6 +1,6 @@
 ---
-- hosts: "docker"
+- hosts: "nodes"
   gather_facts: True
   become: True
   roles:
-    - "docker"
+    - "kubernetes/nodes"
